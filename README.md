@@ -3,9 +3,15 @@
 
 # pyFarm
 Automate farming test sensors and nutrient dosing via IoT
+* Rough Dev right now contributing as I go
 
 # Raspberry Pi
 The utility used to implement everything
+
+## Remote Internet / Network
+* https://docs.sixfab.com/docs/ppp-installer-for-base-hat
+* https://tldp.org/HOWTO/PPP-HOWTO/
+* https://docs.sixfab.com/docs/qmi-interface-with-cellular-iot-hat
 
 # Motivation
 After a lot of research, I wanted to build something that provided more clarity, transparency, and cost effective approach to soil nutrition. There are lots of tutorials and talks mentioning to have your NPK correct, but what is correct? How do you know when you have it correct? 
