@@ -1,4 +1,4 @@
-![farm](https://i.ytimg.com/vi/V-qySnIjuJ4/hqdefault.jpg)
+![farm](https://www.amfam.com/-/media/images/amfam/products/farm-ranch/farm-coverages---aspect-crop.jpg)
 <hr>
 
 # pyFarm
@@ -9,6 +9,8 @@ The utility used to implement everything
 
 # Motivation
 After a lot of research, I wanted to build something that provided more clarity, transparency, and cost effective approach to soil nutrition. There are lots of tutorials and talks mentioning to have your NPK correct, but what is correct? How do you know when you have it correct? 
+
+Then learning all the other variables that stem from Light and DLI, I knew there was room for improvement and opportunity.
 
 # Shout-Outs
 * <b>Harley Smith
