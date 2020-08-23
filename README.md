@@ -1,3 +1,6 @@
+![farm](https://i.ytimg.com/vi/V-qySnIjuJ4/hqdefault.jpg)
+<hr>
+
 # pyFarm
 Automate farming test sensors and nutrient dosing via IoT
 
