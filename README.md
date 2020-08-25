@@ -27,3 +27,10 @@ Then learning all the other variables that stem from Light and DLI, I knew there
 <hr>
 <br>
 These scientists I learned an INCREDIBLE amount from and can't thank them enough for the free open-sourced information they shared in their decades of research. These guys are pioneers and rockstars in my book (and a lot of other ppl's book I'm sure). You can tell they are extremely passionate about their work.
+
+
+# Examples
+#### Poured a cup of tap water into the soil on the spike
+![NPK_Chart](NPK_Chart.png)
+#### Stats
+![NPK_Stats](NPK_Stats.png)
