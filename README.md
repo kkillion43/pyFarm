@@ -8,6 +8,11 @@ Automate farming test sensors and nutrient dosing via IoT
 # Raspberry Pi
 The utility used to implement everything
 
+![SolarSetup](/Images/SolarSetup.jpg)
+![SoilData](/Images/Soil_Data.png)
+![SoilData](Images/Soil_Data_2.PNG)
+
+
 ## Remote Internet / Network
 *  SIM868 GSM/GPRS Hat (Tmobile)
 *  https://github.com/billz/raspap-webgui
