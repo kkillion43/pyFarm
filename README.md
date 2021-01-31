@@ -10,7 +10,7 @@ The utility used to implement everything
 
 ![SolarSetup](/Images/SolarSetup.jpg)
 ![SoilData](/Images/Soil_Data.png)
-![SoilData](/Images/Soil_Data2.png)
+![SoilData](Images/Soil_Data_2.PNG)
 
 
 ## Remote Internet / Network
