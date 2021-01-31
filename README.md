@@ -8,6 +8,11 @@ Automate farming test sensors and nutrient dosing via IoT
 # Raspberry Pi
 The utility used to implement everything
 
+![SolarSetup](/Images/SolarSetup.png)
+![SoilData](/Images/Soil_Data.png)
+![SoilData](/Images/Soil_Data2.png)
+
+
 ## Remote Internet / Network
 * https://docs.sixfab.com/docs/ppp-installer-for-base-hat
 * https://tldp.org/HOWTO/PPP-HOWTO/
