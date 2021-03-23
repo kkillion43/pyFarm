@@ -26,7 +26,7 @@ Then learning all the other variables that stem from Light and DLI, I knew there
 # Shout-Outs
 ### Harley Smith
 ![Harley](https://www.cannabisimp.com/wp-content/uploads/2019/03/Harley-Smith-Profile.png)
-### Bruce Bugsbee
+### Bruce Bugbee
 ![Bruce](https://i1.wp.com/hortamericas.com/wp-content/uploads/2016/06/ust_-from-Research-Ofc_BruceBugbee_DWT2016.jpg?resize=400%2C300&ssl=1)
 
 <hr>
