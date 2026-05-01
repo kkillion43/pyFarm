@@ -1,0 +1,18 @@
+[Unit]
+Description=Greenhouse Pi — Sensor monitoring, automation and API server
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=pi
+WorkingDirectory=/home/pi/greenhouse
+ExecStart=/home/pi/greenhouse/venv/bin/python main.py
+Restart=on-failure
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=greenhouse
+
+[Install]
+WantedBy=multi-user.target

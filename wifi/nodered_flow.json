@@ -1,0 +1,1076 @@
+[
+  {
+    "id": "greenhouse-tab",
+    "type": "tab",
+    "label": "Greenhouse",
+    "disabled": false,
+    "info": "Greenhouse Pi \u2014 sensor dashboard and relay controls.\nFastAPI base URL: http://100.89.173.109:8000"
+  },
+  {
+    "id": "ui-tab-live",
+    "type": "ui_tab",
+    "name": "Live Readings",
+    "icon": "show_chart",
+    "order": 1
+  },
+  {
+    "id": "ui-tab-relays",
+    "type": "ui_tab",
+    "name": "Relays",
+    "icon": "power",
+    "order": 2
+  },
+  {
+    "id": "ui-tab-soil",
+    "type": "ui_tab",
+    "name": "Soil Data",
+    "icon": "grass",
+    "order": 3
+  },
+  {
+    "id": "ui-tab-history",
+    "type": "ui_tab",
+    "name": "Sensor History",
+    "icon": "timeline",
+    "order": 4
+  },
+  {
+    "id": "ui-group-live",
+    "type": "ui_group",
+    "name": "Live Readings",
+    "tab": "ui-tab-live",
+    "order": 1,
+    "disp": false,
+    "width": "12"
+  },
+  {
+    "id": "ui-group-relays",
+    "type": "ui_group",
+    "name": "Relay Controls",
+    "tab": "ui-tab-relays",
+    "order": 1,
+    "disp": false,
+    "width": "12"
+  },
+  {
+    "id": "ui-group-soil",
+    "type": "ui_group",
+    "name": "Soil Gauges",
+    "tab": "ui-tab-soil",
+    "order": 1,
+    "disp": false,
+    "width": "12"
+  },
+  {
+    "id": "ui-group-soil-charts",
+    "type": "ui_group",
+    "name": "Soil Charts",
+    "tab": "ui-tab-soil",
+    "order": 2,
+    "disp": false,
+    "width": "12"
+  },
+  {
+    "id": "ui-group-history",
+    "type": "ui_group",
+    "name": "Sensor History",
+    "tab": "ui-tab-history",
+    "order": 1,
+    "disp": false,
+    "width": "12"
+  },
+  {
+    "id": "ws-client",
+    "type": "websocket-client",
+    "path": "ws://100.89.173.109:8000/ws/live",
+    "wholemsg": "false"
+  },
+  {
+    "id": "ws-live-in",
+    "type": "websocket in",
+    "z": "greenhouse-tab",
+    "name": "Live Feed",
+    "server": "",
+    "client": "ws-client",
+    "x": 120,
+    "y": 80,
+    "wires": [
+      [
+        "ws-parse"
+      ]
+    ]
+  },
+  {
+    "id": "ws-parse",
+    "type": "json",
+    "z": "greenhouse-tab",
+    "name": "Parse JSON",
+    "x": 300,
+    "y": 80,
+    "wires": [
+      [
+        "split-readings"
+      ]
+    ]
+  },
+  {
+    "id": "split-readings",
+    "type": "function",
+    "z": "greenhouse-tab",
+    "name": "Extract sensor 1",
+    "func": "const data = msg.payload['1'] || {};\nif (!data) return null;\nmsg.air_temp_f = data.air_temp_f;\nmsg.humidity   = data.humidity;\nmsg.vpd        = data.vpd;\nmsg.moisture   = data.moisture;\nmsg.payload    = data;\nreturn msg;",
+    "outputs": 1,
+    "x": 500,
+    "y": 80,
+    "wires": [
+      [
+        "gauge-temp",
+        "gauge-humidity",
+        "gauge-vpd",
+        "gauge-moisture",
+        "gauge-ph",
+        "gauge-soil-temp",
+        "gauge-ec",
+        "gauge-nitrogen",
+        "gauge-phosphorus",
+        "gauge-potassium"
+      ]
+    ]
+  },
+  {
+    "id": "gauge-temp",
+    "type": "ui_gauge",
+    "z": "greenhouse-tab",
+    "name": "Air Temp \u00b0F",
+    "group": "ui-group-live",
+    "order": 1,
+    "width": "3",
+    "height": "3",
+    "gtype": "gage",
+    "title": "Air Temp",
+    "label": "\u00b0F",
+    "format": "{{msg.payload.air_temp_f}}",
+    "min": 32,
+    "max": 120,
+    "colors": [
+      "#00b4ff",
+      "#2e7d32",
+      "#ff3300"
+    ],
+    "x": 750,
+    "y": 40,
+    "wires": []
+  },
+  {
+    "id": "gauge-humidity",
+    "type": "ui_gauge",
+    "z": "greenhouse-tab",
+    "name": "Humidity %",
+    "group": "ui-group-live",
+    "order": 2,
+    "width": "3",
+    "height": "3",
+    "gtype": "gage",
+    "title": "Humidity",
+    "label": "%",
+    "format": "{{msg.payload.humidity}}",
+    "min": 0,
+    "max": 100,
+    "colors": [
+      "#ff9800",
+      "#2e7d32",
+      "#00b4ff"
+    ],
+    "x": 750,
+    "y": 100,
+    "wires": []
+  },
+  {
+    "id": "gauge-vpd",
+    "type": "ui_gauge",
+    "z": "greenhouse-tab",
+    "name": "VPD kPa",
+    "group": "ui-group-live",
+    "order": 3,
+    "width": "3",
+    "height": "3",
+    "gtype": "gage",
+    "title": "VPD",
+    "label": "kPa",
+    "format": "{{msg.payload.vpd}}",
+    "min": 0,
+    "max": 3,
+    "colors": [
+      "#00b4ff",
+      "#2e7d32",
+      "#ff3300"
+    ],
+    "x": 750,
+    "y": 160,
+    "wires": []
+  },
+  {
+    "id": "gauge-moisture",
+    "type": "ui_gauge",
+    "z": "greenhouse-tab",
+    "name": "Soil Moisture %",
+    "group": "ui-group-soil",
+    "order": 7,
+    "width": "3",
+    "height": "3",
+    "gtype": "gage",
+    "title": "Soil Moisture",
+    "label": "%",
+    "format": "{{msg.payload.moisture}}",
+    "min": 0,
+    "max": 100,
+    "colors": [
+      "#ff3300",
+      "#ff9800",
+      "#2e7d32"
+    ],
+    "x": 750,
+    "y": 220,
+    "wires": []
+  },
+  {
+    "id": "relay-on-request",
+    "type": "http request",
+    "z": "greenhouse-tab",
+    "name": "POST relay ON",
+    "method": "POST",
+    "ret": "txt",
+    "paytoqs": "ignore",
+    "url": "http://100.89.173.109:8000/relays/{{{msg.topic}}}/on",
+    "tls": "",
+    "x": 380,
+    "y": 320,
+    "wires": [
+      []
+    ]
+  },
+  {
+    "id": "relay-off-request",
+    "type": "http request",
+    "z": "greenhouse-tab",
+    "name": "POST relay OFF",
+    "method": "POST",
+    "ret": "txt",
+    "url": "http://100.89.173.109:8000/relays/{{{msg.topic}}}/off",
+    "x": 380,
+    "y": 380,
+    "wires": [
+      []
+    ]
+  },
+  {
+    "id": "relay-pulse-build",
+    "type": "function",
+    "z": "greenhouse-tab",
+    "name": "Build pulse URL",
+    "func": "msg.url = `http://100.89.173.109:8000/relays/${msg.topic}/pulse?duration=${msg.payload}`;\nreturn msg;",
+    "outputs": 1,
+    "x": 320,
+    "y": 440,
+    "wires": [
+      [
+        "relay-pulse-request"
+      ]
+    ]
+  },
+  {
+    "id": "relay-pulse-request",
+    "type": "http request",
+    "z": "greenhouse-tab",
+    "name": "POST relay pulse",
+    "method": "POST",
+    "ret": "txt",
+    "url": "",
+    "x": 520,
+    "y": 440,
+    "wires": [
+      []
+    ]
+  },
+  {
+    "id": "inject-history",
+    "type": "inject",
+    "z": "greenhouse-tab",
+    "name": "Fetch history every 5 min",
+    "props": [
+      {
+        "p": "payload"
+      }
+    ],
+    "repeat": "300",
+    "crontab": "",
+    "once": true,
+    "onceDelay": "2",
+    "payload": "",
+    "payloadType": "date",
+    "x": 160,
+    "y": 560,
+    "wires": [
+      [
+        "history-request"
+      ]
+    ]
+  },
+  {
+    "id": "history-request",
+    "type": "http request",
+    "z": "greenhouse-tab",
+    "name": "GET sensor history",
+    "method": "GET",
+    "ret": "obj",
+    "url": "http://100.89.173.109:8000/sensors/1/history?limit=100",
+    "x": 400,
+    "y": 560,
+    "wires": [
+      [
+        "history-parse"
+      ]
+    ]
+  },
+  {
+    "id": "history-parse",
+    "type": "function",
+    "z": "greenhouse-tab",
+    "name": "Format for chart",
+    "func": "const rows = msg.payload.slice().reverse();\nconst series = ['pH','Soil Temp \u00b0F','Moisture %','EC'];\nconst labels = rows.map(r => new Date(r.timestamp).getTime());\nconst data = [\n  rows.map(r => r.ph),\n  rows.map(r => r.soil_temp_f),\n  rows.map(r => r.moisture),\n  rows.map(r => r.electrical_conductivity)\n];\nmsg.payload = [{ series, data, labels }];\nreturn msg;",
+    "outputs": 1,
+    "x": 620,
+    "y": 560,
+    "wires": [
+      [
+        "chart-history"
+      ]
+    ]
+  },
+  {
+    "id": "chart-history",
+    "type": "ui_chart",
+    "z": "greenhouse-tab",
+    "name": "Sensor History",
+    "group": "ui-group-history",
+    "order": 1,
+    "width": "12",
+    "height": "6",
+    "label": "Sensor History",
+    "chartType": "line",
+    "legend": "true",
+    "xformat": "MM/DD/YY HH:mm",
+    "interpolate": "linear",
+    "nodata": "Waiting for data\u2026",
+    "outputs": 1,
+    "x": 820,
+    "y": 560,
+    "wires": [
+      []
+    ]
+  },
+  {
+    "id": "relay-map",
+    "type": "ui_template",
+    "z": "greenhouse-tab",
+    "group": "ui-group-relays",
+    "name": "Relay Map",
+    "order": 5,
+    "width": "6",
+    "height": "5",
+    "format": "<style>table{width:100%;border-collapse:collapse;font-size:0.85em}th,td{padding:4px 6px;text-align:left;border-bottom:1px solid #444}th{color:#aaa}td.pos{font-weight:bold;color:#90caf9}td.exp{color:#777;font-style:italic}</style><table><tr><th>#</th><th>Name</th><th>BCM</th><th>Purpose</th></tr><tr><td class='pos'>1</td><td>p_pump_1</td><td>5</td><td>Pump 1</td></tr><tr><td class='pos'>2</td><td>p_pump_2</td><td>13</td><td>Pump 2</td></tr><tr><td class='pos'>3</td><td>main_water_pump</td><td>20</td><td>Main Water Pump</td></tr><tr><td class='pos'>4</td><td>trashcan</td><td>26</td><td>Auto-watering</td></tr><tr><td class='pos exp'>5</td><td class='exp'>relay_5</td><td class='exp'>TBD</td><td class='exp'>Expansion</td></tr><tr><td class='pos exp'>6</td><td class='exp'>relay_6</td><td class='exp'>TBD</td><td class='exp'>Expansion</td></tr><tr><td class='pos exp'>7</td><td class='exp'>relay_7</td><td class='exp'>TBD</td><td class='exp'>Expansion</td></tr><tr><td class='pos exp'>8</td><td class='exp'>relay_8</td><td class='exp'>TBD</td><td class='exp'>Expansion</td></tr></table>",
+    "x": 750,
+    "y": 700,
+    "wires": [
+      []
+    ]
+  },
+  {
+    "id": "gauge-ph",
+    "type": "ui_gauge",
+    "z": "greenhouse-tab",
+    "name": "pH",
+    "group": "ui-group-soil",
+    "order": 1,
+    "width": "3",
+    "height": "3",
+    "gtype": "gage",
+    "title": "pH",
+    "label": "pH",
+    "format": "{{msg.payload.ph | number:1}}",
+    "min": 0,
+    "max": 14,
+    "colors": [
+      "#ff3300",
+      "#2e7d32",
+      "#ff3300"
+    ],
+    "x": 750,
+    "y": 840,
+    "wires": []
+  },
+  {
+    "id": "gauge-soil-temp",
+    "type": "ui_gauge",
+    "z": "greenhouse-tab",
+    "name": "Soil Temp \u00b0F",
+    "group": "ui-group-soil",
+    "order": 2,
+    "width": "3",
+    "height": "3",
+    "gtype": "gage",
+    "title": "Soil Temp",
+    "label": "\u00b0F",
+    "format": "{{msg.payload.soil_temp_f | number:1}}",
+    "min": 32,
+    "max": 120,
+    "colors": [
+      "#00b4ff",
+      "#2e7d32",
+      "#ff3300"
+    ],
+    "x": 750,
+    "y": 900,
+    "wires": []
+  },
+  {
+    "id": "gauge-ec",
+    "type": "ui_gauge",
+    "z": "greenhouse-tab",
+    "name": "Electrical Conductivity",
+    "group": "ui-group-soil",
+    "order": 3,
+    "width": "3",
+    "height": "3",
+    "gtype": "gage",
+    "title": "EC",
+    "label": "ppm",
+    "format": "{{msg.payload.electrical_conductivity | number:0}}",
+    "min": 0,
+    "max": 2000,
+    "colors": [
+      "#ff9800",
+      "#2e7d32",
+      "#ff3300"
+    ],
+    "x": 750,
+    "y": 960,
+    "wires": []
+  },
+  {
+    "id": "gauge-nitrogen",
+    "type": "ui_gauge",
+    "z": "greenhouse-tab",
+    "name": "Nitrogen",
+    "group": "ui-group-soil",
+    "order": 4,
+    "width": "3",
+    "height": "3",
+    "gtype": "gage",
+    "title": "Nitrogen (N)",
+    "label": "mg/kg",
+    "format": "{{msg.payload.nitrogen | number:0}}",
+    "min": 0,
+    "max": 200,
+    "colors": [
+      "#ff9800",
+      "#2e7d32",
+      "#1565c0"
+    ],
+    "x": 750,
+    "y": 1020,
+    "wires": []
+  },
+  {
+    "id": "gauge-phosphorus",
+    "type": "ui_gauge",
+    "z": "greenhouse-tab",
+    "name": "Phosphorus",
+    "group": "ui-group-soil",
+    "order": 5,
+    "width": "3",
+    "height": "3",
+    "gtype": "gage",
+    "title": "Phosphorus (P)",
+    "label": "mg/kg",
+    "format": "{{msg.payload.phosphorus | number:0}}",
+    "min": 0,
+    "max": 200,
+    "colors": [
+      "#ff9800",
+      "#2e7d32",
+      "#1565c0"
+    ],
+    "x": 750,
+    "y": 1080,
+    "wires": []
+  },
+  {
+    "id": "gauge-potassium",
+    "type": "ui_gauge",
+    "z": "greenhouse-tab",
+    "name": "Potassium",
+    "group": "ui-group-soil",
+    "order": 6,
+    "width": "3",
+    "height": "3",
+    "gtype": "gage",
+    "title": "Potassium (K)",
+    "label": "mg/kg",
+    "format": "{{msg.payload.potassium | number:0}}",
+    "min": 0,
+    "max": 200,
+    "colors": [
+      "#ff9800",
+      "#2e7d32",
+      "#1565c0"
+    ],
+    "x": 750,
+    "y": 1140,
+    "wires": []
+  },
+  {
+    "id": "inject-soil-history",
+    "type": "inject",
+    "z": "greenhouse-tab",
+    "name": "Fetch soil history every 5 min",
+    "props": [
+      {
+        "p": "payload"
+      }
+    ],
+    "repeat": "300",
+    "crontab": "",
+    "once": true,
+    "onceDelay": "3",
+    "topic": "",
+    "payload": "",
+    "payloadType": "date",
+    "x": 160,
+    "y": 1260,
+    "wires": [
+      [
+        "soil-history-request"
+      ]
+    ]
+  },
+  {
+    "id": "soil-history-request",
+    "type": "http request",
+    "z": "greenhouse-tab",
+    "name": "GET soil history",
+    "method": "GET",
+    "ret": "obj",
+    "url": "http://100.89.173.109:8000/sensors/1/history?limit=200",
+    "x": 390,
+    "y": 1260,
+    "wires": [
+      [
+        "soil-history-parse"
+      ]
+    ]
+  },
+  {
+    "id": "soil-history-parse",
+    "type": "function",
+    "z": "greenhouse-tab",
+    "name": "Format soil charts",
+    "func": "const rows = msg.payload.slice().reverse();\nconst labels = rows.map(r => new Date(r.timestamp).getTime());\nconst npk      = { payload: [{ series: ['Nitrogen','Phosphorus','Potassium'], data: [rows.map(r => r.nitrogen), rows.map(r => r.phosphorus), rows.map(r => r.potassium)], labels }] };\nconst ec       = { payload: [{ series: ['EC (ppm)'], data: [rows.map(r => r.electrical_conductivity)], labels }] };\nconst moisture = { payload: [{ series: ['Soil Temp \u00b0F','Moisture %'], data: [rows.map(r => r.soil_temp_f), rows.map(r => r.moisture)], labels }] };\nconst ph       = { payload: [{ series: ['pH'], data: [rows.map(r => r.ph)], labels }] };\nreturn [npk, ec, moisture, ph];",
+    "outputs": 4,
+    "x": 610,
+    "y": 1260,
+    "wires": [
+      [
+        "chart-npk"
+      ],
+      [
+        "chart-ec"
+      ],
+      [
+        "chart-air-moisture"
+      ],
+      [
+        "chart-ph"
+      ]
+    ]
+  },
+  {
+    "id": "chart-npk",
+    "type": "ui_chart",
+    "z": "greenhouse-tab",
+    "name": "NPK & EC Chart",
+    "group": "ui-group-soil-charts",
+    "order": 1,
+    "width": "12",
+    "height": "5",
+    "label": "Nutrients & EC",
+    "chartType": "line",
+    "legend": "true",
+    "xformat": "MM/DD/YY HH:mm",
+    "interpolate": "linear",
+    "nodata": "Waiting for data\u2026",
+    "outputs": 1,
+    "x": 820,
+    "y": 1220,
+    "wires": [
+      []
+    ]
+  },
+  {
+    "id": "chart-ec",
+    "type": "ui_chart",
+    "z": "greenhouse-tab",
+    "name": "EC Chart",
+    "group": "ui-group-soil-charts",
+    "order": 2,
+    "width": "12",
+    "height": "4",
+    "label": "Electrical Conductivity (EC)",
+    "chartType": "line",
+    "legend": "true",
+    "xformat": "MM/DD/YY HH:mm",
+    "interpolate": "linear",
+    "nodata": "Waiting for data\u2026",
+    "x": 820,
+    "y": 1160,
+    "wires": [
+      [],
+      []
+    ]
+  },
+  {
+    "id": "chart-air-moisture",
+    "type": "ui_chart",
+    "z": "greenhouse-tab",
+    "name": "Air & Moisture Chart",
+    "group": "ui-group-soil-charts",
+    "order": 3,
+    "width": "12",
+    "height": "5",
+    "label": "Soil Temp \u00b0F & Moisture",
+    "chartType": "line",
+    "legend": "true",
+    "xformat": "MM/DD/YY HH:mm",
+    "interpolate": "linear",
+    "nodata": "Waiting for data\u2026",
+    "outputs": 1,
+    "x": 820,
+    "y": 1280,
+    "wires": [
+      []
+    ]
+  },
+  {
+    "id": "chart-ph",
+    "type": "ui_chart",
+    "z": "greenhouse-tab",
+    "name": "pH Chart",
+    "group": "ui-group-soil-charts",
+    "order": 4,
+    "width": "12",
+    "height": "4",
+    "label": "pH",
+    "chartType": "line",
+    "legend": "true",
+    "xformat": "MM/DD/YY HH:mm",
+    "interpolate": "linear",
+    "nodata": "Waiting for data\u2026",
+    "outputs": 1,
+    "x": 820,
+    "y": 1340,
+    "wires": [
+      []
+    ]
+  },
+  {
+    "id": "ui-tab-daily",
+    "type": "ui_tab",
+    "name": "Daily Summary",
+    "icon": "bar_chart",
+    "order": 5
+  },
+  {
+    "id": "ui-group-daily",
+    "type": "ui_group",
+    "name": "Daily Charts",
+    "tab": "ui-tab-daily",
+    "order": 1,
+    "disp": false,
+    "width": "12"
+  },
+  {
+    "id": "inject-daily",
+    "type": "inject",
+    "z": "greenhouse-tab",
+    "name": "Fetch daily history every hour",
+    "props": [
+      {
+        "p": "payload"
+      }
+    ],
+    "repeat": "3600",
+    "once": true,
+    "onceDelay": "5",
+    "payload": "",
+    "payloadType": "date",
+    "x": 160,
+    "y": 1440,
+    "wires": [
+      [
+        "daily-request"
+      ]
+    ]
+  },
+  {
+    "id": "daily-request",
+    "type": "http request",
+    "z": "greenhouse-tab",
+    "name": "GET 5000 readings",
+    "method": "GET",
+    "ret": "obj",
+    "url": "http://100.89.173.109:8000/sensors/1/history?limit=5000",
+    "x": 390,
+    "y": 1440,
+    "wires": [
+      [
+        "daily-parse"
+      ]
+    ]
+  },
+  {
+    "id": "daily-parse",
+    "type": "function",
+    "z": "greenhouse-tab",
+    "name": "Aggregate daily",
+    "func": "const rows = msg.payload.slice().reverse();\nconst days = {};\nfor (const r of rows) {\n  const day = r.timestamp.substring(0, 10);\n  if (!days[day]) days[day] = {moisture:[], ph:[], ec:[], temp:[]};\n  if (r.moisture != null)                  days[day].moisture.push(r.moisture);\n  if (r.ph != null)                        days[day].ph.push(r.ph);\n  if (r.electrical_conductivity != null)   days[day].ec.push(r.electrical_conductivity);\n  if (r.soil_temp_f != null)               days[day].temp.push(r.soil_temp_f);\n}\nconst sorted = Object.keys(days).sort();\nconst avg = a => a.length ? +(a.reduce((x,y)=>x+y,0)/a.length).toFixed(2) : null;\nconst mn  = a => a.length ? +Math.min(...a).toFixed(2) : null;\nconst mx  = a => a.length ? +Math.max(...a).toFixed(2) : null;\nconst labels = sorted.map(d => new Date(d).getTime());\nconst moisture = { payload: [{ series: ['Avg','Min','Max'],\n  data: [sorted.map(d=>avg(days[d].moisture)), sorted.map(d=>mn(days[d].moisture)), sorted.map(d=>mx(days[d].moisture))], labels }] };\nconst ph = { payload: [{ series: ['Avg','Min','Max'],\n  data: [sorted.map(d=>avg(days[d].ph)), sorted.map(d=>mn(days[d].ph)), sorted.map(d=>mx(days[d].ph))], labels }] };\nconst ec = { payload: [{ series: ['Avg','Min','Max'],\n  data: [sorted.map(d=>avg(days[d].ec)), sorted.map(d=>mn(days[d].ec)), sorted.map(d=>mx(days[d].ec))], labels }] };\nconst temp = { payload: [{ series: ['Avg','Min','Max'],\n  data: [sorted.map(d=>avg(days[d].temp)), sorted.map(d=>mn(days[d].temp)), sorted.map(d=>mx(days[d].temp))], labels }] };\nreturn [moisture, ph, ec, temp];",
+    "outputs": 4,
+    "x": 610,
+    "y": 1440,
+    "wires": [
+      [
+        "chart-daily-moisture"
+      ],
+      [
+        "chart-daily-ph"
+      ],
+      [
+        "chart-daily-ec"
+      ],
+      [
+        "chart-daily-temp"
+      ]
+    ]
+  },
+  {
+    "id": "chart-daily-moisture",
+    "type": "ui_chart",
+    "z": "greenhouse-tab",
+    "name": "Daily Moisture",
+    "group": "ui-group-daily",
+    "order": 1,
+    "width": "12",
+    "height": "5",
+    "label": "Moisture % \u2014 Daily (Avg / Min / Max)",
+    "chartType": "bar",
+    "legend": "true",
+    "xformat": "MM/DD/YY HH:mm",
+    "interpolate": "linear",
+    "nodata": "Waiting for data\u2026",
+    "x": 840,
+    "y": 1400,
+    "wires": [
+      [],
+      []
+    ]
+  },
+  {
+    "id": "chart-daily-ph",
+    "type": "ui_chart",
+    "z": "greenhouse-tab",
+    "name": "Daily pH",
+    "group": "ui-group-daily",
+    "order": 2,
+    "width": "12",
+    "height": "5",
+    "label": "pH \u2014 Daily (Avg / Min / Max)",
+    "chartType": "bar",
+    "legend": "true",
+    "xformat": "MM/DD/YY HH:mm",
+    "interpolate": "linear",
+    "nodata": "Waiting for data\u2026",
+    "x": 840,
+    "y": 1460,
+    "wires": [
+      [],
+      []
+    ]
+  },
+  {
+    "id": "chart-daily-ec",
+    "type": "ui_chart",
+    "z": "greenhouse-tab",
+    "name": "Daily EC",
+    "group": "ui-group-daily",
+    "order": 3,
+    "width": "12",
+    "height": "5",
+    "label": "EC ppm \u2014 Daily (Avg / Min / Max)",
+    "chartType": "bar",
+    "legend": "true",
+    "xformat": "MM/DD/YY HH:mm",
+    "interpolate": "linear",
+    "nodata": "Waiting for data\u2026",
+    "x": 840,
+    "y": 1520,
+    "wires": [
+      [],
+      []
+    ]
+  },
+  {
+    "id": "chart-daily-temp",
+    "type": "ui_chart",
+    "z": "greenhouse-tab",
+    "name": "Daily Soil Temp",
+    "group": "ui-group-daily",
+    "order": 4,
+    "width": "12",
+    "height": "5",
+    "label": "Soil Temp \u00b0F \u2014 Daily (Avg / Min / Max)",
+    "chartType": "bar",
+    "legend": "true",
+    "xformat": "MM/DD/YY HH:mm",
+    "interpolate": "linear",
+    "nodata": "Waiting for data\u2026",
+    "x": 840,
+    "y": 1580,
+    "wires": [
+      [],
+      []
+    ]
+  },
+  {
+    "id": "sw-pump1",
+    "type": "ui_switch",
+    "z": "greenhouse-tab",
+    "name": "Pump 1",
+    "label": "Pump 1",
+    "tooltip": "p_pump_1",
+    "group": "ui-group-relays",
+    "order": 1,
+    "width": "6",
+    "height": "1",
+    "passthru": true,
+    "decouple": false,
+    "topic": "p_pump_1",
+    "topicType": "str",
+    "style": "",
+    "onvalue": "true",
+    "onvalueType": "bool",
+    "onicon": "",
+    "oncolor": "#2e7d32",
+    "offvalue": "false",
+    "offvalueType": "bool",
+    "officon": "",
+    "offcolor": "#c62828",
+    "animate": true,
+    "x": 120,
+    "y": 320,
+    "wires": [
+      [
+        "relay-switch-router"
+      ]
+    ]
+  },
+  {
+    "id": "sw-pump2",
+    "type": "ui_switch",
+    "z": "greenhouse-tab",
+    "name": "Pump 2",
+    "label": "Pump 2",
+    "tooltip": "p_pump_2",
+    "group": "ui-group-relays",
+    "order": 2,
+    "width": "6",
+    "height": "1",
+    "passthru": true,
+    "decouple": false,
+    "topic": "p_pump_2",
+    "topicType": "str",
+    "style": "",
+    "onvalue": "true",
+    "onvalueType": "bool",
+    "onicon": "",
+    "oncolor": "#2e7d32",
+    "offvalue": "false",
+    "offvalueType": "bool",
+    "officon": "",
+    "offcolor": "#c62828",
+    "animate": true,
+    "x": 120,
+    "y": 380,
+    "wires": [
+      [
+        "relay-switch-router"
+      ]
+    ]
+  },
+  {
+    "id": "sw-main",
+    "type": "ui_switch",
+    "z": "greenhouse-tab",
+    "name": "Main Water Pump",
+    "label": "Main Water Pump",
+    "tooltip": "main_water_pump",
+    "group": "ui-group-relays",
+    "order": 3,
+    "width": "6",
+    "height": "1",
+    "passthru": true,
+    "decouple": false,
+    "topic": "main_water_pump",
+    "topicType": "str",
+    "style": "",
+    "onvalue": "true",
+    "onvalueType": "bool",
+    "onicon": "",
+    "oncolor": "#2e7d32",
+    "offvalue": "false",
+    "offvalueType": "bool",
+    "officon": "",
+    "offcolor": "#c62828",
+    "animate": true,
+    "x": 120,
+    "y": 440,
+    "wires": [
+      [
+        "relay-switch-router"
+      ]
+    ]
+  },
+  {
+    "id": "sw-trashcan",
+    "type": "ui_switch",
+    "z": "greenhouse-tab",
+    "name": "Trashcan (Auto)",
+    "label": "Trashcan (Auto)",
+    "tooltip": "trashcan",
+    "group": "ui-group-relays",
+    "order": 4,
+    "width": "6",
+    "height": "1",
+    "passthru": true,
+    "decouple": false,
+    "topic": "trashcan",
+    "topicType": "str",
+    "style": "",
+    "onvalue": "true",
+    "onvalueType": "bool",
+    "onicon": "",
+    "oncolor": "#2e7d32",
+    "offvalue": "false",
+    "offvalueType": "bool",
+    "officon": "",
+    "offcolor": "#c62828",
+    "animate": true,
+    "x": 120,
+    "y": 500,
+    "wires": [
+      [
+        "relay-switch-router"
+      ]
+    ]
+  },
+  {
+    "id": "relay-switch-router",
+    "type": "function",
+    "z": "greenhouse-tab",
+    "name": "Route toggle",
+    "func": "// msg.payload is true (on) or false (off)\n// msg.topic is the relay name\nconst base = 'http://100.89.173.109:8000/relays';\nif (msg.payload === true) {\n  msg.url = `${base}/${msg.topic}/on`;\n} else {\n  msg.url = `${base}/${msg.topic}/off`;\n}\nreturn msg;",
+    "outputs": 1,
+    "x": 320,
+    "y": 410,
+    "wires": [
+      [
+        "relay-toggle-request"
+      ]
+    ]
+  },
+  {
+    "id": "relay-toggle-request",
+    "type": "http request",
+    "z": "greenhouse-tab",
+    "name": "POST relay toggle",
+    "method": "POST",
+    "ret": "txt",
+    "url": "",
+    "x": 530,
+    "y": 410,
+    "wires": [
+      []
+    ]
+  },
+  {
+    "id": "inject-relay-status",
+    "type": "inject",
+    "z": "greenhouse-tab",
+    "name": "Poll relay status on start",
+    "props": [
+      {
+        "p": "payload"
+      }
+    ],
+    "repeat": "10",
+    "once": true,
+    "onceDelay": "1",
+    "payload": "",
+    "payloadType": "date",
+    "x": 140,
+    "y": 550,
+    "wires": [
+      [
+        "relay-status-request"
+      ]
+    ]
+  },
+  {
+    "id": "relay-status-request",
+    "type": "http request",
+    "z": "greenhouse-tab",
+    "name": "GET /relays",
+    "method": "GET",
+    "ret": "obj",
+    "url": "http://100.89.173.109:8000/relays",
+    "x": 370,
+    "y": 550,
+    "wires": [
+      [
+        "relay-status-parse"
+      ]
+    ]
+  },
+  {
+    "id": "relay-status-parse",
+    "type": "function",
+    "z": "greenhouse-tab",
+    "name": "Fan out to switches",
+    "func": "const s = msg.payload;\n// Send true/false to each switch so it reflects hardware state\nnode.send([\n  { payload: s.p_pump_1        === true, topic: 'p_pump_1' },\n  { payload: s.p_pump_2        === true, topic: 'p_pump_2' },\n  { payload: s.main_water_pump === true, topic: 'main_water_pump' },\n  { payload: s.trashcan        === true, topic: 'trashcan' }\n]);\nreturn null;",
+    "outputs": 4,
+    "x": 590,
+    "y": 550,
+    "wires": [
+      [
+        "sw-pump1"
+      ],
+      [
+        "sw-pump2"
+      ],
+      [
+        "sw-main"
+      ],
+      [
+        "sw-trashcan"
+      ]
+    ]
+  }
+]

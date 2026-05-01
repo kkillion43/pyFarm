@@ -1,0 +1,17 @@
+[Unit]
+Description=Greenhouse Pi — Headless WiFi provisioning
+Before=greenhouse.service network-online.target
+DefaultDependencies=no
+After=NetworkManager.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=no
+User=root
+ExecStart=/home/pi/greenhouse/venv/bin/python /home/pi/greenhouse/wifi/provisioning.py
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=wifi-setup
+
+[Install]
+WantedBy=multi-user.target

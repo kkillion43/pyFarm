@@ -1,0 +1,119 @@
+# =============================================================================
+# Greenhouse Pi — Central Configuration
+# All hardware pins, addresses, thresholds, and service settings live here.
+# Never hardcode values in source files; read them through config_loader.py.
+# =============================================================================
+
+# ---------------------------------------------------------------------------
+# RS-485 Soil Sensors (minimalmodbus)
+# Add additional sensors by incrementing the address.
+# ---------------------------------------------------------------------------
+sensors:
+  serial_port: "/dev/ttyS0"
+  baud_rate: 9600
+  soil:
+    - id: 1
+      address: 1         # Modbus address on the RS-485 bus
+      name: "bed_1"
+    # - id: 2
+    #   address: 2
+    #   name: "bed_2"
+
+  # DHT11 air temperature / humidity sensor
+  dht:
+    pin: 24              # BCM pin number
+    model: "DHT11"       # DHT11 | DHT22
+    leaf_offset_c: 2.5   # Degrees C subtracted from air temp to estimate leaf temp for VPD
+
+# ---------------------------------------------------------------------------
+# GPIO Relay Pin Map  (BCM numbering)
+# Key names are used throughout the API as relay identifiers.
+#
+# Relay board positions 1–8:
+#   Position 1 — p_pump_1        — BCM  5  — Pump 1
+#   Position 2 — p_pump_2        — BCM 13  — Pump 2
+#   Position 3 — main_water_pump — BCM 20  — Main Water Pump
+#   Position 4 — trashcan        — BCM 26  — Auto-watering relay
+#   Position 5 — relay_5         — BCM TBD — Expansion (unassigned)
+#   Position 6 — relay_6         — BCM TBD — Expansion (unassigned)
+#   Position 7 — relay_7         — BCM TBD — Expansion (unassigned)
+#   Position 8 — relay_8         — BCM TBD — Expansion (unassigned)
+# ---------------------------------------------------------------------------
+relays:
+  p_pump_1: 5          # Position 1 — Pump 1
+  p_pump_2: 13         # Position 2 — Pump 2
+  main_water_pump: 20  # Position 3 — Main Water Pump
+  trashcan: 26         # Position 4 — Auto-watering relay
+  # Uncomment and set BCM pin when relay is wired:
+  # relay_5: null      # Position 5 — Expansion
+  # relay_6: null      # Position 6 — Expansion
+  # relay_7: null      # Position 7 — Expansion
+  # relay_8: null      # Position 8 — Expansion
+
+# ---------------------------------------------------------------------------
+# Mock Mode — set true to run without physical sensors/relays (for testing)
+# ---------------------------------------------------------------------------
+mock_mode: false
+
+# ---------------------------------------------------------------------------
+# Automation — Watering Logic
+# ---------------------------------------------------------------------------
+automation:
+  enabled: true
+  poll_interval_seconds: 300      # How often sensor readings are taken
+  moisture_threshold: 12          # Water when moisture drops AT OR BELOW this value (lower band)
+  moisture_target: 18             # Stop watering once moisture rises ABOVE this value (upper band)
+  oscillate_readings: 6           # Number of readings to look back when checking moisture trend
+  water_duration_seconds: 15      # How long to run the pump per watering cycle
+  # Relay to activate when watering. Must be one of the active names defined under 'relays:' above.
+  # Available names (board position → name):
+  #   Relay 1 — p_pump_1        (BCM  5)  active
+  #   Relay 2 — p_pump_2        (BCM 13)  active
+  #   Relay 3 — main_water_pump (BCM 20)  active
+  #   Relay 4 — trashcan        (BCM 26)  active
+  #   Relay 5 — relay_5         (BCM TBD) expansion — uncomment in relays section first
+  #   Relay 6 — relay_6         (BCM TBD) expansion — uncomment in relays section first
+  #   Relay 7 — relay_7         (BCM TBD) expansion — uncomment in relays section first
+  #   Relay 8 — relay_8         (BCM TBD) expansion — uncomment in relays section first
+  water_relay: "trashcan"
+
+# ---------------------------------------------------------------------------
+# Database
+# ---------------------------------------------------------------------------
+database:
+  path: "/home/pi/greenhouse/data/greenhouse.db"
+
+# ---------------------------------------------------------------------------
+# Logging
+# ---------------------------------------------------------------------------
+logging:
+  level: "INFO"                   # DEBUG | INFO | WARNING | ERROR
+  log_file: "/home/pi/greenhouse/logs/greenhouse.log"
+  max_bytes: 5242880              # 5 MB per file
+  backup_count: 3
+
+# ---------------------------------------------------------------------------
+# FastAPI Server
+# ---------------------------------------------------------------------------
+api:
+  host: "0.0.0.0"
+  port: 8000
+  ws_push_interval_seconds: 10   # How often the /ws/live endpoint pushes data
+
+# ---------------------------------------------------------------------------
+# Tailscale Remote Access
+# Get a reusable pre-authorized key from:
+#   https://login.tailscale.com/admin/settings/keys
+# Mark it: Reusable = true, Pre-authorized = true
+# WARNING: Do not commit this file to a public repository with a real key.
+# ---------------------------------------------------------------------------
+tailscale:
+  auth_key: "tskey-auth-REPLACE_ME"   # Set TAILSCALE_AUTH_KEY in .env instead
+  hostname: "greenhouse-pi"
+
+# ---------------------------------------------------------------------------
+# WiFi Provisioning (captive portal)
+# ---------------------------------------------------------------------------
+wifi:
+  ap_ssid: "Greenhouse-Setup"
+  portal_port: 80
